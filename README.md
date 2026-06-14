@@ -1,4 +1,4 @@
-# Quantis 📊
+# Quantis
 
 > *"Understand the past, diagnose the present, to predict the future."*
 
