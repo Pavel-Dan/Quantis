@@ -1,0 +1,93 @@
+{
+  "title": "Quantis - Infrastructure Monitoring",
+  "uid": "quantis-infra-001",
+  "schemaVersion": 38,
+  "version": 1,
+  "refresh": "30s",
+  "time": { "from": "now-1h", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Prometheus Up",
+      "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 },
+      "targets": [
+        {
+          "expr": "up{job=\"prometheus\"}",
+          "legendFormat": "Prometheus"
+        }
+      ],
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "auto"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "type": "value", "options": { "1": { "text": "UP", "color": "green" }, "0": { "text": "DOWN", "color": "red" } } }
+          ]
+        }
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Grafana Up",
+      "gridPos": { "x": 6, "y": 0, "w": 6, "h": 4 },
+      "targets": [
+        {
+          "expr": "up{job=\"grafana\"}",
+          "legendFormat": "Grafana"
+        }
+      ],
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "none"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "type": "value", "options": { "1": { "text": "UP", "color": "green" }, "0": { "text": "DOWN", "color": "red" } } }
+          ]
+        }
+      }
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Prometheus - Samples ingested/s",
+      "gridPos": { "x": 0, "y": 4, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "rate(prometheus_tsdb_head_samples_appended_total[1m])",
+          "legendFormat": "samples/s"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Prometheus - Scrape duration (ms)",
+      "gridPos": { "x": 12, "y": 4, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "scrape_duration_seconds * 1000",
+          "legendFormat": "{{job}}"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "text",
+      "title": "Architecture Quantis",
+      "gridPos": { "x": 0, "y": 12, "w": 24, "h": 6 },
+      "options": {
+        "mode": "markdown",
+        "content": "## Pipeline Quantis\n\n`Google Forms` → `Apps Script` → `GCS (data lake)` → `Pub/Sub` → `Cloud Function (trigger)` → `Cloud Run Job (ETL + KPI)` → `BigQuery (data warehouse)` → `Grafana (dashboards)`\n\n**Stack monitoring locale** : Prometheus + Grafana (ce dashboard)\n\n**KPIs calculés** : Revenue, Gross Margin, Operating Margin, Net Margin, Current Ratio, Debt-to-Equity, Return on Equity"
+      }
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+version: "3.9"
+
+# Stack de monitoring locale Quantis
+# Lance : docker compose -f docker/docker-compose.yml up -d
+# Grafana : http://localhost:3000  (admin / quantis)
+# Prometheus : http://localhost:9090
+
+services:
+
+  # -----------------------------------------------------------------------
+  # Prometheus - collecte les métriques système
+  # -----------------------------------------------------------------------
+  prometheus:
+    image: prom/prometheus:v2.52.0
+    container_name: quantis-prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    restart: unless-stopped
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.retention.time=7d"
+
+  # -----------------------------------------------------------------------
+  # Grafana - dashboards de monitoring
+  # -----------------------------------------------------------------------
+  grafana:
+    image: grafana/grafana:10.4.3
+    container_name: quantis-grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: quantis
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/quantis_overview.json
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+volumes:
+  grafana-data:
